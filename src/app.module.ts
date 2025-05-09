@@ -25,7 +25,7 @@ import { env } from './config/env';
     JwtModule.register({  
       global: true,
       secret: env.secretKey,
-      signOptions: { expiresIn: '1h' },
+      signOptions: { expiresIn: '6h' },
     }),
     
     NewsModule, TwitterModule, AdminModule],

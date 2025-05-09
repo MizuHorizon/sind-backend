@@ -12,11 +12,8 @@ export class CreateAdminUserDto {
 
   @IsString()
   @IsNotEmpty()
-  firstName: string;
+  fullName: string;
 
-  @IsString()
-  @IsNotEmpty()
-  lastName: string;
 
   @IsString()
   @IsOptional()

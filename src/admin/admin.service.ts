@@ -7,22 +7,55 @@ import { JwtService } from '@nestjs/jwt';
 import { CreateAdminUserDto } from './dto/create-admin.dto';
 import { UpdateAdminUserDto } from './dto/update-admin.dto';
 import { AdminLoginDto } from './dto/admin-login.dto';
-
+import { TwitterApiService } from 'src/twitter/twitter-api.service';
+import { TwitterUser } from 'src/twitter/entities/twitter.entity';
 @Injectable()
 export class AdminUserService {
   constructor(
     @InjectRepository(AdminUser)
     private adminUserRepository: Repository<AdminUser>,
     private jwtService: JwtService,
-  ) {}
+    private twitterApiService: TwitterApiService,
+    @InjectRepository(TwitterUser)
+    private twitterUserRepository: Repository<TwitterUser>,
+  ) { }
+
+  async searchUser(username: string) {
+    try {
+      const user = await this.twitterApiService.getUserByUsername(username);
+      console.log(user);
+      return user;
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to search user: ' + error.message);
+    }
+  }
+
+  async addUserOfTwitterToDb(username: string) {
+    try {
+      const user = await this.twitterApiService.getUserByUsername(username)
+
+      const twitterUser = this.twitterUserRepository.create({
+        username: user.username,
+        displayName: user.name,
+        profileImageUrl: user.profile_image_url,
+        bio: user.description,
+        twitterId : user.id
+      });
+
+      return twitterUser;
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to add user of Twitter to database: ' + error.message);
+    }
+  }
+
 
   async create(createAdminUserDto: CreateAdminUserDto): Promise<AdminUser> {
     try {
       // Check if user with email already exists
-      const existingUser = await this.adminUserRepository.findOne({ 
-        where: { email: createAdminUserDto.email } 
+      const existingUser = await this.adminUserRepository.findOne({
+        where: { email: createAdminUserDto.email }
       });
-      
+
       if (existingUser) {
         throw new ConflictException('Email already in use');
       }
@@ -78,9 +111,9 @@ export class AdminUserService {
   async update(id: number, updateAdminUserDto: UpdateAdminUserDto): Promise<AdminUser> {
     try {
       const adminUser = await this.findOne(id);
-      
+
       this.adminUserRepository.merge(adminUser, updateAdminUserDto);
-      
+
       return await this.adminUserRepository.save(adminUser);
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -107,31 +140,32 @@ export class AdminUserService {
   async login(adminLoginDto: AdminLoginDto): Promise<{ access_token: string; user: Partial<AdminUser> }> {
     try {
       const adminUser = await this.findByEmail(adminLoginDto.email);
-      
+
       if (!adminUser.isActive) {
         throw new UnauthorizedException('User account is inactive');
       }
-      
+
       const isPasswordValid = await adminUser.comparePassword(adminLoginDto.password);
-      
+
+
       if (!isPasswordValid) {
         throw new UnauthorizedException('Invalid credentials');
       }
-      
+
       // Update last login
       adminUser.lastLoginAt = new Date();
       await this.adminUserRepository.save(adminUser);
-      
-      const payload = { 
-        sub: adminUser.id, 
+
+      const payload = {
+        sub: adminUser.id,
         email: adminUser.email,
         role: adminUser.role,
         isSuperAdmin: adminUser.isSuperAdmin
       };
-      
+
       // Return user data (excluding password)
       const { password, ...userWithoutPassword } = adminUser;
-      
+
       return {
         access_token: this.jwtService.sign(payload),
         user: userWithoutPassword
@@ -147,15 +181,15 @@ export class AdminUserService {
   async changePassword(id: string, currentPassword: string, newPassword: string): Promise<AdminUser> {
     try {
       const adminUser = await this.findOne(Number(id));
-      
+
       const isPasswordValid = await adminUser.comparePassword(currentPassword);
-      
+
       if (!isPasswordValid) {
         throw new UnauthorizedException('Current password is incorrect');
       }
-      
+
       adminUser.password = await bcrypt.hash(newPassword, 10);
-      
+
       return await this.adminUserRepository.save(adminUser);
     } catch (error) {
       if (error instanceof UnauthorizedException || error instanceof NotFoundException) {

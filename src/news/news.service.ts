@@ -4,6 +4,8 @@ import { UpdateNewsDto } from './dto/update-news.dto';
 
 @Injectable()
 export class NewsService {
+
+
   create(createNewsDto: CreateNewsDto) {
     return 'This action adds a new news';
   }

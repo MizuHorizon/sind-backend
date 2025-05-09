@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, HttpException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, HttpException, Query } from '@nestjs/common';
 import { AdminUserService } from './admin.service';
 import { CreateAdminUserDto } from './dto/create-admin.dto';
 import { UpdateAdminUserDto } from './dto/update-admin.dto';
@@ -21,6 +21,35 @@ export class AdminController {
       throw new HttpException(
         error.message || 'Login failed',
         error.status || HttpStatus.UNAUTHORIZED
+      );
+    }
+  }
+
+
+  @Post('users/twitter')
+  async addUserOfTwitterToDb(@Query('username') username: string){
+    try {
+      return await this.adminService.searchUser(username);
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Failed to add Twitter user to database',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+
+
+  @Get('users/twitter')
+  async searchUser(
+    @Query('username') username: string) {
+    try {
+      return await this.adminService.addUserOfTwitterToDb(username);
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        error.message || 'Failed to add Twitter user to database',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }

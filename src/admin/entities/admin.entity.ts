@@ -13,7 +13,7 @@ export class AdminUser {
   password: string;
 
   @Column()
-  full: string;
+  fullName: string;
 
   @Column()
   role: string = 'admin';
