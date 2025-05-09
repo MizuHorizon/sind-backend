@@ -11,7 +11,10 @@ export const env = {
     password: process.env.DATABASE_PASSWORD,
   },
   twitter: {
-    clientId: process.env.TWITTER_CLIENT_ID,
+    clientId: process.env.TWITTER_CLIENT_SECRET,
     clientSecret: process.env.TWITTER_CLIENT_SECRET,
+  },
+  gemini: {
+    apiKey: process.env.GEMINI_API_KEY,
   },
 };
