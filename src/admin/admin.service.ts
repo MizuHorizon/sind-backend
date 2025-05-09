@@ -22,18 +22,21 @@ export class AdminUserService {
 
   async searchUser(username: string) {
     try {
+      console.log("username",username);
       const user = await this.twitterApiService.getUserByUsername(username);
-      console.log(user);
+      console.log("user",user);
       return user;
     } catch (error) {
+      console.log("error",error);
       throw new InternalServerErrorException('Failed to search user: ' + error.message);
     }
   }
 
   async addUserOfTwitterToDb(username: string) {
     try {
+      console.log("username",username);
       const user = await this.twitterApiService.getUserByUsername(username)
-
+      console.log(user);
       const twitterUser = this.twitterUserRepository.create({
         username: user.username,
         displayName: user.name,
@@ -41,6 +44,8 @@ export class AdminUserService {
         bio: user.description,
         twitterId : user.id
       });
+
+      await this.twitterUserRepository.save(twitterUser);
 
       return twitterUser;
     } catch (error) {

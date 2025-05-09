@@ -20,7 +20,7 @@ export class TwitterService {
     try {
       // Fetch tweets for each user in parallel
       const tweetPromises = userIds.map(userId => 
-        this.twitterClient.getUserTweets(userId, tweetsPerUser)
+        this.twitterClient.getUserTweets( userId as any, tweetsPerUser)
       );
       
       const userTweets = await Promise.all(tweetPromises);

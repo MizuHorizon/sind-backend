@@ -29,7 +29,7 @@ export class AdminController {
   @Post('users/twitter')
   async addUserOfTwitterToDb(@Query('username') username: string){
     try {
-      return await this.adminService.searchUser(username);
+      return await this.adminService.addUserOfTwitterToDb(username);
     } catch (error) {
       throw new HttpException(
         error.message || 'Failed to add Twitter user to database',
@@ -44,7 +44,7 @@ export class AdminController {
   async searchUser(
     @Query('username') username: string) {
     try {
-      return await this.adminService.addUserOfTwitterToDb(username);
+      return await this.adminService.searchUser(username);
     } catch (error) {
       console.log(error);
       throw new HttpException(

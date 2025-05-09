@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { NewsService } from './news.service';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { UpdateNewsDto } from './dto/update-news.dto';
@@ -12,9 +12,9 @@ export class NewsController {
     return this.newsService.create(createNewsDto);
   }
 
-  @Get()
-  findAll() {
-    return this.newsService.findAll();
+  @Get('twitter')
+  findAll(@Query('page') page: number = 1, @Query('limit') limit: number = 10) {
+    return this.newsService.getTwitterFeed(page, limit);
   }
 
   @Get(':id')
