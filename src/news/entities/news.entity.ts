@@ -4,4 +4,19 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 export class News {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({ nullable: true })
+  title: string;
+
+  @Column({ nullable: true })
+  content: string;
+
+  @Column({ nullable: true })
+  url: string;
+
+  @Column({ nullable: true })
+  summary: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
 }

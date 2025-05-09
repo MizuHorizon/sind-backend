@@ -9,6 +9,9 @@ import { UpdateAdminUserDto } from './dto/update-admin.dto';
 import { AdminLoginDto } from './dto/admin-login.dto';
 import { TwitterApiService } from 'src/twitter/twitter-api.service';
 import { TwitterUser } from 'src/twitter/entities/twitter.entity';
+import { getCleanTextFromUrl } from 'src/service/site_service';
+import { News } from 'src/news/entities/news.entity';
+import GeminiService from 'src/service/gemini_service';
 @Injectable()
 export class AdminUserService {
   constructor(
@@ -18,23 +21,78 @@ export class AdminUserService {
     private twitterApiService: TwitterApiService,
     @InjectRepository(TwitterUser)
     private twitterUserRepository: Repository<TwitterUser>,
+
+    @InjectRepository(News)
+    private newsRepository: Repository<News>,
+    private geminiService: GeminiService,
   ) { }
 
   async searchUser(username: string) {
     try {
-      console.log("username",username);
+      console.log("username", username);
       const user = await this.twitterApiService.getUserByUsername(username);
-      console.log("user",user);
+      console.log("user", user);
       return user;
     } catch (error) {
-      console.log("error",error);
+      console.log("error", error);
       throw new InternalServerErrorException('Failed to search user: ' + error.message);
+    }
+  }
+
+  async addArticle(url: string) {
+    try {
+      const cleanText = await getCleanTextFromUrl(url);
+
+      const prompt = `
+      Summarize the following text:
+      ${cleanText}
+      -give me summary of text
+      -json format
+      example:
+      {
+        "title": "title of text",
+        "summary": "summary of text"
+      }
+      `;
+
+
+      const summary = await this.geminiService.generateContent(prompt);
+
+      console.log("summary", summary.candidates[0].content);
+      // const article = this.newsRepository.create({
+      //   title: cleanText.title,
+      //   content: cleanText.content,
+      //   url: url,
+      //   summary: summary.candidates[0].content.toString(),
+      //   createdAt: new Date(),
+      //   updatedAt: new Date()
+      // });
+
+
+      const text = summary.candidates[0].content.parts[0].text.replace(/```json/g, '').replace(/```/g, '');
+      console.log("text", text);
+      const json = JSON.parse(text);
+      console.log("json", json);
+
+      const article = this.newsRepository.create({
+        title: json.title,
+        summary: json.summary,
+        url: url,
+        createdAt: new Date(),
+      });
+
+      await this.newsRepository.save(article);
+
+
+      return article;
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to add article: ' + error.message);
     }
   }
 
   async addUserOfTwitterToDb(username: string) {
     try {
-      console.log("username",username);
+      console.log("username", username);
       const user = await this.twitterApiService.getUserByUsername(username)
       console.log(user);
       const twitterUser = this.twitterUserRepository.create({
@@ -42,7 +100,7 @@ export class AdminUserService {
         displayName: user.name,
         profileImageUrl: user.profile_image_url,
         bio: user.description,
-        twitterId : user.id
+        twitterId: user.id
       });
 
       await this.twitterUserRepository.save(twitterUser);

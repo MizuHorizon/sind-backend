@@ -55,10 +55,11 @@ export class AdminController {
     }
   }
 
-  @Get('news/scrape')
-  async scrapeNews(@Query('url') url: string) {
+  @Post('article')
+  async scrapeNews(@Body() body: { url: string }) {
     try {
-      return await getCleanTextFromUrl(url);
+      return await this.adminService.addArticle(body.url);
+    
     } catch (error) {
       throw new HttpException(
         error.message || 'Failed to scrape news',

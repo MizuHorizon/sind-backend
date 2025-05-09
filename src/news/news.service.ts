@@ -23,6 +23,11 @@ export class NewsService {
 
   ) { }
 
+
+  async getNews() {
+    return this.newsRepository.find();
+  }
+
   async getTwitterSummary(hours: number = 24) {
     try {
       const twitterUsers = await this.twitterUserRepository.find();
