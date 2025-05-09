@@ -20,6 +20,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@genkit-ai/googleai": "^1.8.0",
+    "@google/genai": "^0.13.0",
     "@google/generative-ai": "^0.24.1",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^4.0.2",
@@ -28,10 +30,12 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/typeorm": "^11.0.0",
+    "axios": "^1.9.0",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
     "dotenv": "^16.5.0",
+    "jsdom": "^26.1.0",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.15.6",
     "reflect-metadata": "^0.2.0",

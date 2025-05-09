@@ -3,6 +3,7 @@ import { AdminUserService } from './admin.service';
 import { CreateAdminUserDto } from './dto/create-admin.dto';
 import { UpdateAdminUserDto } from './dto/update-admin.dto';
 import { AdminLoginDto } from './dto/admin-login.dto';
+import { getCleanTextFromUrl } from 'src/service/site_service';
 
 @Controller('admin')
 export class AdminController {
@@ -49,6 +50,18 @@ export class AdminController {
       console.log(error);
       throw new HttpException(
         error.message || 'Failed to add Twitter user to database',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  @Get('news/scrape')
+  async scrapeNews(@Query('url') url: string) {
+    try {
+      return await getCleanTextFromUrl(url);
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Failed to scrape news',
         error.status || HttpStatus.INTERNAL_SERVER_ERROR
       );
     }

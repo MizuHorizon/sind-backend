@@ -30,14 +30,15 @@ export class TwitterApiService {
         max_results: count,
         'tweet.fields': ['created_at', 'author_id'],
         expansions: ['author_id'],
-        'user.fields': ['name', 'username', 'profile_image_url']
+        'user.fields': ['name', 'username', 'profile_image_url'],
+        exclude: ['retweets', 'replies']
       });
       console.log("response", response);
 
       return this.formatTweets(response,user);
     } catch (error) {
       console.log(error);
-      throw new Error(`Failed to fetch tweets: ${error.message}`);
+      throw new Error(error);
     }
   }
 
@@ -85,10 +86,10 @@ export class TwitterApiService {
       id: tweet.id,
       text: tweet.text,
       authorId: tweet.author_id,
-      authorName: user.displayName,
-      authorUsername: user.username,
-      authorProfileImageUrl: user.profileImageUrl,
-      createdAt: new Date(tweet.created_at),
+      displayName: user.displayName,
+      username: user.username,
+      profile_image_url: user.profileImageUrl,
+      created_at: tweet.created_at,
     }));
   }
 }

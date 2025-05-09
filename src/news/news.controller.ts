@@ -12,6 +12,13 @@ export class NewsController {
     return this.newsService.create(createNewsDto);
   }
 
+  @Get('twitter/summary')
+  getTwitterSummary(
+    @Query('hours ') hours: number = 24,
+  ) {
+    return this.newsService.getTwitterSummary(hours);
+  }
+
   @Get('twitter')
   findAll(@Query('page') page: number = 1, @Query('limit') limit: number = 10) {
     return this.newsService.getTwitterFeed(page, limit);
