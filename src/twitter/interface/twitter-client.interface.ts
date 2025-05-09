@@ -7,7 +7,7 @@ export interface Tweet {
     // Add more properties as needed
   }
   
-  export interface TwitterClientInterface {
-    getUserTweets(userId: string, count?: number): Promise<Tweet[]>;
-    getUsersByIds(userIds: string[]): Promise<any[]>;
-  }
+  // export interface TwitterClientInterface {
+  //   getUserTweets(userId: string, count?: number): Promise<Tweet[]>;
+  //   getUsersByIds(userIds: string[]): Promise<any[]>;
+  // }

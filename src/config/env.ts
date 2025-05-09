@@ -4,6 +4,7 @@ dotenvConfig({ path: '.env' });
 
 export const env = {
   port: process.env.PORT,
+  secretKey: process.env.SECRET_KEY,
   database: {
     host: process.env.DATABASE_HOST,
     port: process.env.DATABASE_PORT,

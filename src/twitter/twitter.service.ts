@@ -1,9 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { TwitterClientInterface, Tweet } from './interface/twitter-client.interface';
-
+import { Inject, Injectable } from '@nestjs/common';
+import { Tweet } from './interface/twitter-client.interface';
+import { TwitterApiService } from './twitter-api.service';
 @Injectable()
 export class TwitterService {
-  constructor(private readonly twitterClient: TwitterClientInterface) {}
+  constructor(
+    private readonly twitterClient: TwitterApiService
+  ) {
+    console.log(this.twitterClient);
+  }
+
 
   /**
    * Fetch tweets from a list of user IDs

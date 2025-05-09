@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { TwitterClientInterface, Tweet } from './interface/twitter-client.interface';
+import { Tweet } from './interface/twitter-client.interface';
 import { env } from '../config/env';
 import * as TwitterApi from 'twitter-api-v2';
 
 @Injectable()
-export class TwitterApiService implements TwitterClientInterface {
+export class TwitterApiService {
   private twitterClient: TwitterApi.TwitterApi;
   
   constructor() {
-    this.twitterClient = new TwitterApi.TwitterApi({
-      clientId: env.twitter.clientId,
-      clientSecret: env.twitter.clientSecret,
-    });
+      this.twitterClient = new TwitterApi.TwitterApi({
+        clientId: env.twitter.clientId,
+        clientSecret: env.twitter.clientSecret,
+      });
   }
 
   async getUserTweets(userId: string, count: number = 10): Promise<Tweet[]> {
